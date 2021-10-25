@@ -13,7 +13,7 @@ Before using Boto3, you need to set up authentication credentials for your AWS a
 
 <pre>[default]
 aws_access_key_id = YOUR_ACCESS_KEY
-aws_secret_access_key = YOUR_SECRET_KEY`
+aws_secret_access_key = YOUR_SECRET_KEY
 </pre>
 
 `~/.aws/config`

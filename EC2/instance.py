@@ -94,11 +94,12 @@ class EC2Instance:
                 )
             )[0]
 
-            # Setting up security group
+            # Setting up security group in the default VPC
             security_group = default_vpc.create_security_group(
-                GroupName=group_name,
-                Description=group_description
+                GroupName = group_name,
+                Description = group_description
             )
+            print(f'Created security group {security_group} in the default VPC {default_vpc.id}')
 
             # Setting up inbound rules for the security group, if provided
             ip_permissions = [{
