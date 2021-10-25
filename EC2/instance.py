@@ -115,13 +115,14 @@ class EC2Instance:
                     # SSH ingress open to only the specified IP address
                     'IpProtocol': 'tcp', 'FromPort': 22, 'ToPort': 22,
                     'IpRanges': [{'CidrIp': f'{ssh_ingress_ip}/32'}]})
+
             security_group.authorize_ingress(IpPermissions=ip_permissions)
             print("Setup complete for setting VPC.")
             return security_group
         except Exception as e:
             print(e)
 
-    def create_instances(self, key_pair,
+    def create_instances(self, key_name,
                          image_id='ami-041d6256ed0f2061c',
                          instance_type='t2.micro',
                          security_group_names=None
@@ -149,19 +150,20 @@ class EC2Instance:
         """
         try:
             if security_group_names:
-                response = self.client.create_instances('ImageId': image_id,
-                'InstanceType': instance_type,
-                'KeyName': key_name,
-                'SecurityGroups': security_group_names,
-                MinCount=1,
-                MaxCount=1
-            )
+                response = self.client.create_instances(
+                    ImageId=image_id,
+                    InstanceType=instance_type,
+                    KeyName=key_name,
+                    SecurityGroups=security_group_names,
+                    MinCount=1,
+                    MaxCount=1
+                )
                 print(f'Created EC2 instance {response[0].id}')
             else:
                 response = self.client.create_instances(
-                    'ImageId': image_id,
-                    'InstanceType': instance_type,
-                    'KeyName': key_name,
+                    ImageId=image_id,
+                    InstanceType=instance_type,
+                    KeyName=key_name,
                     MinCount=1,
                     MaxCount=1
                 )
