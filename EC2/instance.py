@@ -12,20 +12,8 @@ def get_your_public_ip():
 
 
 class EC2Instance:
-    def __init__(self) -> None:
-        self.client = boto3.client('ec2')
-
-    def describe_instances(self):
-        """
-        This API call provides you all the available EC2 instances being used.
-        Note: The terminated instances will not show up.
-        """
-        try:
-            response = self.client.describe_instances()
-            return response
-
-        except Exception as e:
-            print(e)
+    def __init__(self, client) -> None:
+        self.client = client
 
     def create_key_pair(self, KeyName, DryRun, **kwargs):
         """
@@ -66,11 +54,23 @@ class EC2Instance:
 
     def describe_key_pairs(self):
         """
-        Lists all the already created Key pairs.
+        Returns the key pairs available in AWS under the user account.
         """
         try:
             response = self.client.describe_key_pairs()
             return response
+        except Exception as e:
+            print(e)
+
+    def describe_instances(self):
+        """
+        This API call provides you all the available EC2 instances being used.
+        Note: The terminated instances will not show up.
+        """
+        try:
+            response = self.client.describe_instances()
+            return response
+
         except Exception as e:
             print(e)
 
@@ -96,10 +96,11 @@ class EC2Instance:
 
             # Setting up security group in the default VPC
             security_group = default_vpc.create_security_group(
-                GroupName = group_name,
-                Description = group_description
+                GroupName=group_name,
+                Description=group_description
             )
-            print(f'Created security group {security_group} in the default VPC {default_vpc.id}')
+            print(
+                f'Created security group {security_group} in the default VPC {default_vpc.id}')
 
             # Setting up inbound rules for the security group, if provided
             ip_permissions = [{
@@ -121,7 +122,35 @@ class EC2Instance:
             print("Setup complete for setting VPC.")
             return security_group
         except Exception as e:
-            print(e)
+            if str(e).__contains__('Duplicate'):
+                print(
+                    f"The security group '{group_name}' already exists for VPC '{group_description}'")
+
+    def delete_security_group(self, group_name=None, group_id=None):
+        """
+        Deletes the security group. Either takes the group name or group ID and not both.
+
+        :param group_name: The group name to delete
+        :param group_id: The group ID to delete
+        :return: The response json after creating the service.
+        """
+        try:
+            if group_name:
+                response = self.client.delete_security_group(
+                    GroupName=group_name
+                )
+            elif group_id:
+                response = self.client.delete_security_group(
+                    GroupId=group_id
+                )
+            else:
+                print(
+                    "Invalid arguments passed, please provide either group name or group ID.")
+            return response
+        except Exception as e:
+            if str(e).__contains__('EC2-Classic') or str(e).__contains__('DependencyViolation'):
+                print(
+                    f'The security group is already in use, please terminate the Ec2 instance first')
 
     def create_instances(self, key_name,
                          image_id='ami-041d6256ed0f2061c',
@@ -151,7 +180,7 @@ class EC2Instance:
         """
         try:
             if security_group_names:
-                response = self.client.create_instances(
+                response = self.client.run_instances(
                     ImageId=image_id,
                     InstanceType=instance_type,
                     KeyName=key_name,
@@ -161,7 +190,7 @@ class EC2Instance:
                 )
                 print(f'Created EC2 instance {response[0].id}')
             else:
-                response = self.client.create_instances(
+                response = self.client.run_instances(
                     ImageId=image_id,
                     InstanceType=instance_type,
                     KeyName=key_name,
@@ -197,20 +226,16 @@ class EC2Instance:
         except Exception as e:
             print(e)
 
-    def get_key_pairs(self):
-        """
-        Returns the key pairs available in AWS under the user account.
-        """
-        try:
-            response = self.client.describe_key_pairs()
-            return response
-        except Exception as e:
-            print(e)
 
-
-#ec2 = EC2Instance().describe_instances()
-#ec2 = EC2Instance().stop_instances()
-#ec2 = EC2Instance().create_key_pair(KeyName='demo_key', DryRun=False)
-#ec2 = EC2Instance().delete_key_pair('demo_key')
-#ec2 = EC2Instance().describe_key_pairs()
+# ec2 = EC2Instance().describe_instances()
+# ec2 = EC2Instance().stop_instances()
+# ec2 = EC2Instance().create_key_pair(KeyName='demo_key', DryRun=False)
+# ec2 = EC2Instance().delete_key_pair('demo_key')
+# ec2 = EC2Instance().describe_key_pairs()
+# ec2 = EC2Instance(boto3.resource('ec2')).setup_default_security_group(
+#     'aws_py_test_sg',
+#     'Testing EC2 security group',
+#     get_your_public_ip()
+# )
+# ec2 = EC2Instance(boto3.client('ec2')).delete_security_group(group_name='aws_py_test_sg')
 # pprint.pprint(ec2)

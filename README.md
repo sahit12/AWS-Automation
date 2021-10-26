@@ -9,6 +9,10 @@ Before using Boto3, you need to set up authentication credentials for your AWS a
 
 **Steps to create AWS credentials through CLI**
 
+`aws configure` -> Copy paste the credentials accordingly
+
+**Add the credentials to the files at the same location mentioned below**
+
 `~/.aws/credentials`
 
 <pre>[default]
