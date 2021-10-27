@@ -125,7 +125,7 @@ class AutoScaleUserData(object):
                 f'Creating the Launch Template created with Template ID:{template_id}')
             return template_id, template_name
         except Exception as e:
-            response = self.ec2_client.describe_launch_templates(
+            response = self.client.describe_launch_templates(
                 LaunchTemplateNames=[
                     template_name,
                 ]
