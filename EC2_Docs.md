@@ -34,3 +34,8 @@ Each EC2 instance can send 1024 packets per second per network interface to Rout
 | Security groups per network interface | 5 | Yes (up to 16) | This quota is enforced separately for IPv4 rules and IPv6 rules. The quota for security groups per network interface multiplied by the quota for rules per security group cannot exceed 1,000. For example, if you increase this quota to 10, we decrease the quota for your number of rules per security group to 100. |
 
 **Note** -> If you to get more information on limits, visit <a href="https://docs.aws.amazon.com/vpc/latest/userguide/amazon-vpc-limits.html">here</a>
+
+## CloudWatch potential for EC2
+
+* `AmazonEC2FullAccess` provides access to Cloudwatch completely. Note: Be careful with this, may lead you to more billing.
+* For each `PutMetricAlarm`(create_alarm method) operation, you must specify either `MetricName` or a `Metrics` array. If you use the `Metrics` parameter, you cannot include the `MetricName` , `Dimensions` , `Period` , `Namespace` , `Statistic` , or `ExtendedStatistic` parameters of `PutMetricAlarm` in the same operation. Instead, you retrieve the metrics you are using in your math expression as part of the Metrics array.

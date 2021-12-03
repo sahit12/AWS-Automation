@@ -1,1 +1,8 @@
+# Virtual Environments
 venv/
+
+# cached files
+__pycache__*
+
+# Remove Data files
+movie*

@@ -58,8 +58,3 @@ class IAMUsers:
 
         except Exception as e:
             print(e)
-
-
-#iam = IAMUsers().update_user('test1', 'DevUser')
-# iam = IAMUsers().list_users()
-# pprint.pprint(iam)

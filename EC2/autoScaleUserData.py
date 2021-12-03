@@ -1,7 +1,6 @@
 import boto3
 from botocore.exceptions import ClientError
 import base64
-import pprint
 
 
 def encode_base64(filepath):
@@ -167,8 +166,3 @@ class AutoScaleUserData(object):
             print(
                 'Could not create the Auto Scaling Group using Launch Templates')
             return False
-
-
-# client = boto3.client('ec2')
-# asc = AutoScaleUserData(client).get_vpc_subnet_az()
-# pprint.pprint(asc)

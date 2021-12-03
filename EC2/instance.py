@@ -155,8 +155,8 @@ class EC2Instance:
     def create_instances(self, key_name,
                          image_id='ami-041d6256ed0f2061c',
                          instance_type='t2.micro',
-                         security_group_names=None
-                         ):
+                         security_group_names=None,
+                         userdata=None):
         """
         Creates a new Amazon EC2 instance. The instance automatically starts immediately after
         it is created.
@@ -185,10 +185,12 @@ class EC2Instance:
                     InstanceType=instance_type,
                     KeyName=key_name,
                     SecurityGroups=security_group_names,
+                    UserData=userdata,
                     MinCount=1,
                     MaxCount=1
                 )
-                print(f'Created EC2 instance {response[0].id}')
+                response_id = response['Instances'][0]['InstanceId']
+                print(f'Created EC2 instance {response_id}')
             else:
                 response = self.client.run_instances(
                     ImageId=image_id,
@@ -197,7 +199,8 @@ class EC2Instance:
                     MinCount=1,
                     MaxCount=1
                 )
-                print(f'Created EC2 instance {response[0].id}')
+                response_id = response['Instances'][0]['InstanceId']
+                print(f'Created EC2 instance {response_id}')
         except Exception as e:
             print(e)
 
@@ -225,17 +228,3 @@ class EC2Instance:
             return response
         except Exception as e:
             print(e)
-
-
-# ec2 = EC2Instance().describe_instances()
-# ec2 = EC2Instance().stop_instances()
-# ec2 = EC2Instance().create_key_pair(KeyName='demo_key', DryRun=False)
-# ec2 = EC2Instance().delete_key_pair('demo_key')
-# ec2 = EC2Instance().describe_key_pairs()
-# ec2 = EC2Instance(boto3.resource('ec2')).setup_default_security_group(
-#     'aws_py_test_sg',
-#     'Testing EC2 security group',
-#     get_your_public_ip()
-# )
-# ec2 = EC2Instance(boto3.client('ec2')).delete_security_group(group_name='aws_py_test_sg')
-# pprint.pprint(ec2)
